@@ -1,5 +1,7 @@
-import todoist from './modules/todoist.js'
+import 'dotenv/config'
 import express from 'express'
+import notion from './modules/notion.js'
+import todoist from './modules/todoist.js'
 
 const app = express()
 const port = 3000
@@ -30,6 +32,25 @@ app.post('/tasks', async (req, res, next) => {
   }
   const result = await todoist.addTask(params)
   res.send(`「${result.content}」が作成されました\n${result.url}`)
+})
+
+app.post('/memo', async (req, res, next) => {
+  const title = req.body.text
+  const result = await notion.pages.create({
+    parent: {
+      database_id: process.env.NOTION_DATABASE_ID
+    },
+    properties: {
+      Name: {
+        title: [{
+          text: {
+            content: title,
+          },
+        }],
+      },
+    }
+  })
+  res.send(`「${result.properties.Name.title[0].text.content}」が作成されました\n${result.url}`)
 })
 
 app.listen(port, () => {
