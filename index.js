@@ -10,15 +10,12 @@ app.use(express.urlencoded({
   extended: true
 })) // for parsing application/x-www-form-urlencoded
 
-app.get('/', (req, res) => {
-  todoist.getLabels()
-    .then((labels) => res.json(labels))
+app.post('/today', (req, res) => {
+  todoist.getTasks({
+      filter: "today"
+    })
+    .then((tasks) => res.json(tasks))
     .catch((error) => console.log(error))
-})
-
-app.post('/today', async (req, res, next) => {
-  const results = await todoist.getTasks()
-  res.send(results)
 })
 
 app.post('/tasks', async (req, res, next) => {
@@ -35,8 +32,8 @@ app.post('/tasks', async (req, res, next) => {
 })
 
 app.post('/memo', async (req, res, next) => {
-  const title = req.body.text
-  const result = await notion.pages.create({
+  const title = !req.body.text ? 'untitle' : req.body.text
+  const params = {
     parent: {
       database_id: process.env.NOTION_DATABASE_ID
     },
@@ -49,8 +46,29 @@ app.post('/memo', async (req, res, next) => {
         }],
       },
     }
+  }
+  const result = await notion.pages.create(params)
+  res.send({
+    "blocks": [{
+      "type": "section",
+      "text": {
+        "type": "mrkdwn",
+        "text": `「${result.properties.Name.title[0].text.content}」が作成されました`
+      },
+      "accessory": {
+        "type": "button",
+        "text": {
+          "type": "plain_text",
+          "text": "開く",
+          "emoji": true
+        },
+        "value": result.url,
+        "url": result.url,
+        "action_id": "button-action"
+      }
+    }]
   })
-  res.send(`「${result.properties.Name.title[0].text.content}」が作成されました\n${result.url}`)
+  // res.send(`「${result.properties.Name.title[0].text.content}」が作成されました\n${result.url}`)
 })
 
 app.listen(port, () => {
