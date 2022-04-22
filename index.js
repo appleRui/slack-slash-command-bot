@@ -1,7 +1,7 @@
-import 'dotenv/config'
-import express from 'express'
-import notion from './modules/notion.js'
-import todoist from './modules/todoist.js'
+require('dotenv/config')
+const express = require('express')
+const notion = require('./modules/notion.js')
+const todoist = require('./modules/todoist.js')
 
 const app = express()
 const port = 3000
@@ -9,6 +9,10 @@ app.use(express.json()) // for parsing application/json
 app.use(express.urlencoded({
   extended: true
 })) // for parsing application/x-www-form-urlencoded
+
+app.get('/', (req, res) => {
+  res.send('Hello Would!!')
+})
 
 app.post('/today', (req, res) => {
   todoist.getTasks({
@@ -68,9 +72,10 @@ app.post('/memo', async (req, res, next) => {
       }
     }]
   })
-  // res.send(`「${result.properties.Name.title[0].text.content}」が作成されました\n${result.url}`)
 })
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
+
+module.exports = app

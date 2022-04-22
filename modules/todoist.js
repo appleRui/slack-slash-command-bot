@@ -1,8 +1,6 @@
-import {
+const {
   TodoistApi
-} from '@doist/todoist-api-typescript'
-import 'dotenv/config'
+} = require('@doist/todoist-api-typescript')
+require('dotenv/config')
 
-const todoist = new TodoistApi(process.env.TODOIST_KEY)
-
-export default todoist
+module.exports = new TodoistApi(process.env.TODOIST_KEY)

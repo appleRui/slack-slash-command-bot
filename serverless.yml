@@ -1,0 +1,11 @@
+service: slack-slash-bot
+provider:
+  name: aws
+  runtime: nodejs14.x
+  region: ap-northeast-1
+functions:
+  app:
+    handler: lamda.handler
+    events:
+      - http: ANY /
+      - http: 'ANY {proxy+}'

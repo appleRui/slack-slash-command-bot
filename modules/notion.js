@@ -1,10 +1,8 @@
-import {
+const {
   Client
-} from '@notionhq/client'
-import 'dotenv/config'
+} = require("@notionhq/client")
+require('dotenv/config')
 
-const notion = new Client({
+module.exports = new Client({
   auth: process.env.NOTION_KEY,
 })
-
-export default notion
